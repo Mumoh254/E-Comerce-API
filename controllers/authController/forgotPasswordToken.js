@@ -51,7 +51,13 @@ const forgotPasswordToken = asyncHandler(async (req, res) => {
             overflow: hidden;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
         }
-        .header, .footer {
+             .header{
+                padding: 20px;
+            text-align: center;
+            color: #c20030;
+            font-weight: bold;
+             }
+         .footer {
             background: linear-gradient(135deg, #2c3e50, #34495e);
             padding: 20px;
             text-align: center;

@@ -6,7 +6,7 @@ const authMiddleware = async (req, res, next) => {
 
     // Check if the token is sent  "Authorization" header as "Bearer"
     if (req?.headers?.authorization?.startsWith("Bearer")) {
-        token = req.headers.authorization.split(" ")[1];  er
+        token = req.headers.authorization.split(" ")[1];  
     } else {
         return res.status(401).json({
             success: false,
