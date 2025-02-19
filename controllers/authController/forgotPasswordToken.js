@@ -29,7 +29,7 @@ const forgotPasswordToken = asyncHandler(async (req, res) => {
 
         const subject = "Password Reset Request - Welt Tallis Cooperation";
         const html = `
-       <!DOCTYPE html>
+    <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -51,17 +51,15 @@ const forgotPasswordToken = asyncHandler(async (req, res) => {
             overflow: hidden;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
         }
-        .header {
+        .header, .footer {
             background: linear-gradient(135deg, #2c3e50, #34495e);
-            padding: 40px 20px;
+            padding: 20px;
             text-align: center;
-        }
-        .header h1 {
             color: white;
+        }
+        .header h1, .footer p {
             margin: 0;
-            font-size: 32px;
-            font-weight: bold;
-            letter-spacing: 1px;
+            font-size: 18px;
         }
         .content {
             padding: 40px;
@@ -69,9 +67,8 @@ const forgotPasswordToken = asyncHandler(async (req, res) => {
         }
         .content h1 {
             color: #2c3e50;
-            margin: 0 0 20px;
-            font-size: 28px;
-            font-weight: bold;
+            font-size: 24px;
+            margin-bottom: 15px;
         }
         .content p {
             font-size: 16px;
@@ -79,10 +76,10 @@ const forgotPasswordToken = asyncHandler(async (req, res) => {
             margin: 10px 0;
             line-height: 1.6;
         }
-        .content a {
+        .btn {
             background: linear-gradient(135deg, #c20030, #a00028);
             color: white;
-            padding: 14px 28px;
+            padding: 12px 24px;
             text-decoration: none;
             border-radius: 8px;
             display: inline-block;
@@ -92,26 +89,13 @@ const forgotPasswordToken = asyncHandler(async (req, res) => {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
-        .content a:hover {
+        .btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
-        .footer {
-            background: linear-gradient(135deg, #2c3e50, #34495e);
-            padding: 20px;
-            text-align: center;
-            color: white;
-        }
-        .footer p {
-            font-size: 12px;
-            margin: 5px 0;
-        }
-        .footer a {
-            color: white;
-            text-decoration: underline;
-        }
-        .footer a:hover {
-            color: #f4f4f4;
+        .divider {
+            border-top: 1px solid #e0e0e0;
+            margin: 20px 0;
         }
         .advert {
             padding: 40px;
@@ -120,9 +104,8 @@ const forgotPasswordToken = asyncHandler(async (req, res) => {
         }
         .advert h2 {
             color: #2c3e50;
-            font-size: 24px;
-            margin-bottom: 15px;
-            font-weight: bold;
+            font-size: 20px;
+            margin-bottom: 10px;
         }
         .advert p {
             font-size: 14px;
@@ -130,89 +113,50 @@ const forgotPasswordToken = asyncHandler(async (req, res) => {
             margin: 10px 0;
             line-height: 1.6;
         }
-        .advert a {
-            background: linear-gradient(135deg, #2c3e50, #34495e);
-            color: white;
-            padding: 14px 28px;
-            text-decoration: none;
-            border-radius: 8px;
-            display: inline-block;
-            font-size: 16px;
-            font-weight: bold;
-            margin: 20px 0;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-        .advert a:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        }
-        .divider {
-            border-top: 1px solid #e0e0e0;
-            margin: 20px 0;
-        }
     </style>
 </head>
 <body>
     <div class="email-container">
-        <!-- Header -->
         <div class="header">
             <h1>Majesty Shoe Collection</h1>
         </div>
-
-        <!-- Main Content -->
         <div class="content">
             <h1>Password Reset Request</h1>
-            <p>You requested a password reset. Please click the button below to reset your password.</p>
-            <a href="${resetURL}">Reset Your Password</a>
+            <p>You requested a password reset. Click the button below to reset your password.</p>
+            <a href="${resetURL}" class="btn">Reset Your Password</a>
             <p style="font-size: 14px; color: #888;">This link is valid for 10 minutes only.</p>
         </div>
-
-        <!-- Majesty Shoe Collection Information -->
         <div class="content">
             <h2>About Majesty Shoe Collection</h2>
-            <p>At Majesty Shoe Collection, we bring you the finest footwear that combines elegance, comfort, and style. Our collection is designed to elevate your wardrobe and make every step you take a statement.</p>
-            <p><strong>Step into Style with Majesty Shoe Collection</strong></p>
-            <p>Contact us at <strong>+254 740 045 355</strong>  <br> email <strong>info@majestyshoecollection.com</strong> for assistance.</p>
-            <a href="https://www.majestyshoecollection.com">Visit Our Website</a>
+            <p>We bring you the finest footwear combining elegance, comfort, and style. Elevate your wardrobe with Majesty Shoe Collection.</p>
+            <p>Contact us at <strong>+254 740 045 355</strong> or email <strong>info@majestyshoecollection.com</strong>.</p>
+            <a href="https://www.majestyshoecollection.com" class="btn">Visit Our Website</a>
         </div>
-
-        <!-- Footer with Social Media Links -->
         <div class="footer">
             <p>&copy; 2023 Majesty Shoe Collection. All rights reserved.</p>
             <p>Follow us: 
-                <a href="https://facebook.com/majestyshoecollection">Facebook</a> | 
-                <a href="https://instagram.com/majestyshoecollection">Instagram</a> | 
-                <a href="https://twitter.com/majestyshoes">Twitter</a> | 
-                <a href="https://linkedin.com/company/majestyshoecollection">LinkedIn</a>
+                <a href="https://facebook.com/majestyshoecollection" style="color:white; text-decoration: underline;">Facebook</a> | 
+                <a href="https://instagram.com/majestyshoecollection" style="color:white; text-decoration: underline;">Instagram</a>
             </p>
         </div>
-
-      
         <div class="divider"></div>
-
-        <!-- Welt Tallis Cooperation Advert -->
         <div class="advert">
             <h2>Powered by Welt Tallis Cooperation</h2>
-            <p>At Welt Tallis Cooperation, we integrate <strong>email notifications</strong>, <strong>SMS</strong>, and <strong>M-Pesa</strong> into your systems for seamless communication and transactions. Our mission is to provide innovative solutions that empower businesses and individuals.</p>
-            <p><strong>Where Creativity Meets Innovation</strong></p>
-            <p>Contact us at <strong>0740045355</strong>  <br> email <strong>peteritumo2030@gmail.com</strong> for assistance.</p>
-            <a href="https://welt-tallis-cooperation.com">Visit Our Website</a>
+            <p>Integrating email notifications, SMS, and M-Pesa for seamless business solutions.</p>
+            <p>Contact us at <strong>0740045355</strong> or email <strong>peteritumo2030@gmail.com</strong>.</p>
+            <a href="https://welt-tallis-cooperation.com" class="btn">Visit Our Website</a>
         </div>
-
-        <!-- Footer for Welt Tallis Cooperation -->
         <div class="footer">
             <p>&copy; 2023 Welt Tallis Cooperation. All rights reserved.</p>
             <p>Follow us: 
-                <a href="https://facebook.com/welttallis">Facebook</a> | 
-                <a href="https://twitter.com/welttallis">Twitter</a> | 
-                <a href="https://linkedin.com/company/welttallis">LinkedIn</a>
+                <a href="https://facebook.com/welttallis" style="color:white; text-decoration: underline;">Facebook</a> | 
+                <a href="https://linkedin.com/company/welttallis" style="color:white; text-decoration: underline;">LinkedIn</a>
             </p>
         </div>
     </div>
 </body>
-</html>`
-
+</html>
+`
         // Prepare email data
         const data = {
             to: email,
