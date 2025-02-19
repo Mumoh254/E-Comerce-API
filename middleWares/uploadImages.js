@@ -29,17 +29,18 @@ const uploadPhoto = multer({
   limits: { fileSize: 2000000 }, // 2MB file size limit
 });
 
-// Image resize function using sharp (for products)
+// Image resize function using sharp 
 const productImageResize = async (req, res, next) => {
-  if (!req.files) return next();  // If no files are uploaded, proceed
+  // If no files are uploaded, proceed
+  if (!req.files) return next();  
 
   try {
     await Promise.all(
       req.files.map(async (file) => {
         await sharp(file.path)
-          .resize(300, 300)  // Resize to 300x300
+          .resize(300, 300)  
           .toFormat('jpeg')
-          .jpeg({ quality: 90 })  // Set JPEG quality to 90
+          .jpeg({ quality: 90 })  // JPEG quality to 90
           .toFile(path.join('public', 'images', 'products', file.filename)); 
       })
     );
@@ -49,7 +50,7 @@ const productImageResize = async (req, res, next) => {
   }
 };
 
-// Image resize function using sharp (for blogs)
+// Image resize function using sharp 
 const blogImageResize = async (req, res, next) => {
   if (!req.files) return next();  
 
@@ -59,7 +60,7 @@ const blogImageResize = async (req, res, next) => {
         await sharp(file.path)
           .resize(300, 300)  // Resize to 300x300
           .toFormat('jpeg')
-          .jpeg({ quality: 90 })  // Set JPEG quality to 90
+          .jpeg({ quality: 90 })  // JPEG quality to 90
           .toFile(path.join('public', 'images', 'blogs', file.filename)); 
       })
     );

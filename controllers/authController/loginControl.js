@@ -89,13 +89,13 @@ const handleRefreshToken = async (req, res) => {
     }
 
     try {
-        // Log the refresh token to see what is being received
+       
         console.log("Received refreshToken:", refreshToken);
         
-        // Decode the token to inspect its contents
+   
         const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET_KEYS_AUTHORIZE);
         
-        console.log("Decoded refreshToken:", decoded); // Check the decoded payload
+        console.log("Decoded refreshToken:", decoded); 
 
         const newAccessToken = generateToken(decoded._id);
         const newRefreshToken = await generateRefreshToken(decoded._id);

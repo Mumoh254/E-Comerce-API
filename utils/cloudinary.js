@@ -1,10 +1,10 @@
 import { v2 as cloudinary } from 'cloudinary';
 import dotenv from 'dotenv';
 
-// Load environment variables from the .env file
+
 dotenv.config();
 
-// Configure Cloudinary
+// Config Cloudinary
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_API_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_CLOUD_API_KEY,
@@ -15,10 +15,10 @@ cloudinary.config({
 const cloudinaryUpload = async (fileUploads) => {
   try {
     const result = await cloudinary.uploader.upload(fileUploads, {
-      resource_type: "auto", // Automatically detect the file type (image/video)
+      resource_type: "auto",
     });
     
-    // Return the URL of the uploaded file
+    // Return the URL
     return {
       url: result.secure_url,
     };
@@ -28,5 +28,5 @@ const cloudinaryUpload = async (fileUploads) => {
   }
 };
 
-// Export the function
+
 module.exports =  { cloudinaryUpload };

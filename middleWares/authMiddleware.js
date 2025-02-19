@@ -4,9 +4,9 @@ const jwt = require("jsonwebtoken");
 const authMiddleware = async (req, res, next) => {
     let token;
 
-    // Check if the token is sent in the "Authorization" header as "Bearer <token>"
+    // Check if the token is sent  "Authorization" header as "Bearer"
     if (req?.headers?.authorization?.startsWith("Bearer")) {
-        token = req.headers.authorization.split(" ")[1];  // Extract token from header
+        token = req.headers.authorization.split(" ")[1];  er
     } else {
         return res.status(401).json({
             success: false,
@@ -43,10 +43,10 @@ const authMiddleware = async (req, res, next) => {
                 });
             }
 
-            // Attach the user to the request object for use in other middlewares or route handlers
+            // Attach the user 
             req.user = user;
 
-            // Proceed to the next middleware or route handler
+            // Proceed 
             next();
         } else {
             return res.status(401).json({

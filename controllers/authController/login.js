@@ -7,7 +7,7 @@ const { generateToken } = require("../../config/jwtToken");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
 
-app.use(express.json()); // for parsing application/json
+app.use(express.json()); 
 
 // Log in the user
 const logIn = async (req, res) => {

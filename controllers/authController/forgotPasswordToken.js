@@ -20,7 +20,7 @@ const forgotPasswordToken = asyncHandler(async (req, res) => {
         const token = await user.createPasswordResetToken();
         await user.save();
 
-        // Create the reset URL
+        //  reset URL
         const resetURL = `${req.protocol}://${req.get('host')}/apiV1/majestycollections/forgotpass/reset/${token}`;
         console.log({
             message:  "Reset  url  extracted",
@@ -29,7 +29,7 @@ const forgotPasswordToken = asyncHandler(async (req, res) => {
 
         const subject = "Password Reset Request - Welt Tallis Cooperation";
         const html = `
-         <!DOCTYPE html>
+       <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -37,39 +37,40 @@ const forgotPasswordToken = asyncHandler(async (req, res) => {
     <title>Password Reset Request - Majesty Shoe Collection</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f4;
+            background-color: #f8f9fa;
             color: #333;
         }
         .email-container {
             max-width: 600px;
-            margin: 0 auto;
+            margin: 20px auto;
             background-color: #ffffff;
-            border-radius: 10px;
+            border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
         }
         .header {
-            background-color: #2c3e50;
-            padding: 20px;
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            padding: 40px 20px;
             text-align: center;
         }
         .header h1 {
             color: white;
             margin: 0;
-            font-size: 24px;
+            font-size: 32px;
             font-weight: bold;
+            letter-spacing: 1px;
         }
         .content {
-            padding: 30px;
+            padding: 40px;
             text-align: center;
         }
         .content h1 {
             color: #2c3e50;
             margin: 0 0 20px;
-            font-size: 24px;
+            font-size: 28px;
             font-weight: bold;
         }
         .content p {
@@ -79,21 +80,24 @@ const forgotPasswordToken = asyncHandler(async (req, res) => {
             line-height: 1.6;
         }
         .content a {
-            background-color: #c20030;
+            background: linear-gradient(135deg, #c20030, #a00028);
             color: white;
-            padding: 12px 24px;
+            padding: 14px 28px;
             text-decoration: none;
-            border-radius: 5px;
+            border-radius: 8px;
             display: inline-block;
             font-size: 16px;
             font-weight: bold;
             margin: 20px 0;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         .content a:hover {
-            background-color: #a00028;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
         }
         .footer {
-            background-color: #2c3e50;
+            background: linear-gradient(135deg, #2c3e50, #34495e);
             padding: 20px;
             text-align: center;
             color: white;
@@ -110,14 +114,15 @@ const forgotPasswordToken = asyncHandler(async (req, res) => {
             color: #f4f4f4;
         }
         .advert {
-            padding: 20px;
+            padding: 40px;
             background-color: #f8f9fa;
             text-align: center;
         }
         .advert h2 {
             color: #2c3e50;
-            font-size: 20px;
-            margin-bottom: 10px;
+            font-size: 24px;
+            margin-bottom: 15px;
+            font-weight: bold;
         }
         .advert p {
             font-size: 14px;
@@ -126,18 +131,25 @@ const forgotPasswordToken = asyncHandler(async (req, res) => {
             line-height: 1.6;
         }
         .advert a {
-            background-color: #2c3e50;
+            background: linear-gradient(135deg, #2c3e50, #34495e);
             color: white;
-            padding: 12px 24px;
+            padding: 14px 28px;
             text-decoration: none;
-            border-radius: 5px;
+            border-radius: 8px;
             display: inline-block;
             font-size: 16px;
             font-weight: bold;
             margin: 20px 0;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         .advert a:hover {
-            background-color: #1a2633;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+        .divider {
+            border-top: 1px solid #e0e0e0;
+            margin: 20px 0;
         }
     </style>
 </head>
@@ -175,6 +187,9 @@ const forgotPasswordToken = asyncHandler(async (req, res) => {
                 <a href="https://linkedin.com/company/majestyshoecollection">LinkedIn</a>
             </p>
         </div>
+
+      
+        <div class="divider"></div>
 
         <!-- Welt Tallis Cooperation Advert -->
         <div class="advert">

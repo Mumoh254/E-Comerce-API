@@ -3,11 +3,12 @@ const bcrypt = require("bcrypt");
 const user = require("../../models/userModel");
 
 const updatePassword = async (req, res) => {
-  const { _id } = req.user;  // Get the logged-in user's ID from the request user object
-  const { password } = req.body;  // Get the new password from the request body
+  //loggedin  user  id  
+  const { _id } = req.user;  
+  const { password } = req.body;  
 
   try {
-    // Validate the MongoDB ID of the user (just in case)
+    // Validate the MongoDB ID of the user 
     validateMongoDbId(_id);
 
     // Find the user by ID
@@ -21,7 +22,7 @@ const updatePassword = async (req, res) => {
       });
     }
 
-    // Ensure password is provided in the request body
+    
     if (!password) {
       return res.status(400).json({
         message: "Password is required",
@@ -31,13 +32,13 @@ const updatePassword = async (req, res) => {
     }
 
     // Hash the new password
-    const salt = await bcrypt.genSalt(10);  // Generate salt for password hashing
-    userRecord.password = await bcrypt.hash(password, salt);  // Hash the password
+    const salt = await bcrypt.genSalt(10); 
+    userRecord.password = await bcrypt.hash(password, salt);  
 
-    // Save the updated user record with the new hashed password
+    // Save the updated user record 
     const updatedUser = await userRecord.save();
 
-    // Exclude password field from the response for security reasons
+    // Exclude password field  (  security)
     updatedUser.password = undefined;
 
     if (updatedUser) {

@@ -26,7 +26,7 @@ The backend API for **Majesty Shoe Collections** is built using **Express.js**, 
 
 1. **Clone the repository**:
     ```bash
-    git clone https://github.com/your-username/majesty-shoe-collections-backend.git
+    git clone https://github.com/Mumoh254/E-Comerce-API
     ```
 
 2. **Navigate to the project directory**:

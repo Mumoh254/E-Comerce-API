@@ -3,7 +3,7 @@ const asyncHandler = require("express-async-handler");
 require("dotenv").config();
 
 const sendEmail = asyncHandler(async (data) => {
-    // Basic field validation
+    // field validation
     if (!data.to || !data.subject || (!data.text && !data.html)) {
         throw new Error("Missing required fields: 'to', 'subject', 'text' or 'html'");
     }
@@ -15,14 +15,14 @@ const sendEmail = asyncHandler(async (data) => {
     }
 
     try {
-        // Create a transporter
+        // transporter
         let transporter = nodemailer.createTransport({
             host: "smtp.gmail.com",
             port: 465,
             secure: true, // Use SSL
             auth: {
                 user: process.env.MAILER_ID,
-                pass: process.env.MAILER_ID_PASSWORD, // Ensure app password if using Gmail with 2FA
+                pass: process.env.MAILER_ID_PASSWORD, 
             },
             tls: {
                 rejectUnauthorized: false,
@@ -34,7 +34,7 @@ const sendEmail = asyncHandler(async (data) => {
             from: `"Majesty Shoe Collection" <${process.env.MAILER_ID}>`, // Sender address
             to: data.to, // Receiver's address
             subject: data.subject,
-            text: data.text || "", // If 'text' is provided, use it, otherwise set to empty string
+            text: data.text || "", 
             html: data.html, // HTML content
         });
 

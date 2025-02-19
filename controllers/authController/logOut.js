@@ -15,10 +15,10 @@ const logOut = async (req, res) => {
         const user = await userModel.findOne({ refreshToken: cookie.refreshToken });
 
         if (!user) {
-            // Clear the refresh token cookie if user not found
+            // Clear the refresh token cookie 
             return res.clearCookie("refreshToken", {
                 httpOnly: true,
-                secure: process.env.NODE_ENV === "production", // Set secure flag only in production (use HTTPS)
+                secure: process.env.NODE_ENV === "production", 
                 path: "/",
             }).json({
                 message: "Logged out successfully",
@@ -26,7 +26,7 @@ const logOut = async (req, res) => {
             });
         }
 
-        // If the user exists   REFRESH  TOKENS  IS   NULL   
+        //  REFRESH  TOKENS  IS   NULL   
         await userModel.findByIdAndUpdate(user._id, {
             refreshToken: null, 
 

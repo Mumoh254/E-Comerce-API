@@ -10,21 +10,21 @@ var cartSchema = new mongoose.Schema({
       },
       count: {
         type: Number,
-        required: true, // You can add validation here if you need
+        required: true,
       },
       color: {
         type: String,
-        required: false, // Optional, if color is not always needed
+        required: false, 
       }
     }
   ],
   paymentIntent: {
-    type: String, // You can specify more detailed structure based on your payment system
-    required: true, // Assuming it's required
+    type: String, 
+    required: true, 
   },
   orderStatus: {
     type: String,
-    default: "Not Processed", // Fixed typo here (was "defgault")
+    default: "Not Processed", 
     enum: [
       "Not Processed", "Processed",
       "Cash On Delivery", "Processing",
@@ -34,7 +34,7 @@ var cartSchema = new mongoose.Schema({
   orderedBy: {
     type: mongoose.Types.ObjectId,
     ref: "user",
-    required: true, // Ensure that an order is linked to a user
+    required: true,
   },
   price:  Number,
   cartTotal:  Number,
@@ -42,4 +42,4 @@ var cartSchema = new mongoose.Schema({
 });
 
 // Export the model
-module.exports = mongoose.model('Cart', cartSchema); // Fixed the model name to 'Cart'
+module.exports = mongoose.model('Cart', cartSchema); 

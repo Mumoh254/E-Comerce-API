@@ -35,7 +35,7 @@ const createProduct = async (req, res, next) => {
 
 const updateProduct = async (req, res, next) => {
   try {
-    const { id } = req.params; // or use slug if you prefer slug-based identification
+    const { id } = req.params; 
     const updatedProductData = req.body;
 
     // Check if the product exists
@@ -47,7 +47,7 @@ const updateProduct = async (req, res, next) => {
       });
     }
 
-    // Generate slug if title is updated
+    // Generate slug whentitle is updated
     if (req.body.title) {
       req.body.slug = slugify(req.body.title);
     }
@@ -71,7 +71,7 @@ const updateProduct = async (req, res, next) => {
 
 const deleteProduct = async (req, res, next) => {
   try {
-    const { id } = req.params; // or use slug if you prefer slug-based identification
+    const { id } = req.params; 
     // Check if the product exists
     const product = await productModel.findById(id);
     if (!product) {
@@ -80,12 +80,16 @@ const deleteProduct = async (req, res, next) => {
         success: false,
       });
     }
+
+
     // Delete the product
     await productModel.findByIdAndDelete(id);
     return res.status(200).json({
       message: "Product deleted successfully!",
       success: true,
     });
+
+
   } catch (error) {
     console.error("Error occurred:", error.message);
     return res.status(500).json({
@@ -129,34 +133,36 @@ const getAllProducts = async (req, res) => {
   try {
     const queryObj = { ...req.query };
 
-    // Remove excluded fields from the query object (pagination, limit, etc.)
+    // Remove excluded field
     const excludeFields = ["page", "sort", "limit", "fields"];
     excludeFields.forEach((el) => delete queryObj[el]);
 
     // Create filtered query for search
     let query = productModel.find(queryObj);
 
-    // Sorting
+    // Sorting   data 
     if (req?.query?.sort) {
       const sortBy = req.query.sort
         .split(',')
         .map(field => {
           if (field.startsWith('-')) {
-            return [field.substring(1), 'desc'];  // For descending order
+              // For descending order
+            return [field.substring(1), 'desc']; 
           }
-          return [field, 'asc'];  // For ascending order
+          // For ascending order
+          return [field, 'asc'];  
         })
         .reduce((acc, [field, order]) => {
           acc[field] = order;
           return acc;
         }, {});
 
-      query = query.sort(sortBy);  // Apply the sort to the MongoDB query
+      query = query.sort(sortBy); 
     } else {
-      query = query.sort('-createdAt');  // Default sorting by createdAt in descending order
+      query = query.sort('-createdAt');  
     }
 
-    // Select specific fields (if specified)
+    // Select specific fields 
     if (req.query.fields) {
       const fields = req.query.fields.split(",");
       query = query.select(fields);
@@ -165,6 +171,7 @@ const getAllProducts = async (req, res) => {
     }
 
     // Paginate if page and limit are provided
+    //pagination
     if (req?.query?.page && req?.query?.limit) {
       const page = parseInt(req.query.page, 10) || 1;
       const limit = parseInt(req.query.limit, 10) || 10;
@@ -180,7 +187,7 @@ const getAllProducts = async (req, res) => {
       }
     }
 
-    // Execute the query and get the results
+    // Query  exec
     const products = await query;
 
     if (products.length > 0) {

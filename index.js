@@ -38,7 +38,7 @@ if (process.env.NODE_ENV_ENVIRONMENT === "development") {
     app.use(morgan(morganFormat, {
         stream: {
             write: (message) => {
-                logger.info(message.trim()); // Log full message directly
+                logger.info(message.trim()); 
             },
         },
     }));

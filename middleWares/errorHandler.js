@@ -1,7 +1,7 @@
 // notFound middleware
 
 const notFound = (req, res, next) => {
-    const error = new Error(`Not Found: ${req.originalUrl}`);  // Use 'error' instead of 'Error' to avoid confusion
+    const error = new Error(`Not Found: ${req.originalUrl}`); 
     error.status = 404;  
     next(error);  
 }
