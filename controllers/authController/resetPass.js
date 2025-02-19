@@ -2,7 +2,7 @@
 
 const   asyncHandler   =  require("express-async-handler")
 const   bcrypt  =  require("bcrypt")
-
+const   crypto  =   require("crypto")
 
 
 const resetPassword = asyncHandler(async (req, res) => {
