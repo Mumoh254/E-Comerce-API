@@ -108,13 +108,16 @@ You can use **Postman** or **Insomnia** to test the API endpoints.
 
 This project is licensed under the MIT License 
 
-## Credits
+## Credits  🏍💥
 
-- **Majesty Shoe Collections** by **Welt Tallis Cooperation**
+- **Majesty Shoe Collections** by **Welt Tallis Cooperation 🎉🤳**
 - Developed by  ** WELT  TALLIS  COOPERATION ***
-- CONTACTS  WELT  TALLIS  +254740045355
-- EMAIL  WELT  TALLIS  *peteritumo2030@gmail.com*
+- CONTACTS  WELT  TALLIS  +254740045355 💬
+- EMAIL  WELT  TALLIS  *peteritumo2030@gmail.com* 🗯
 - Buy  Me  Coffeee : Mpesa  +254740045355
 - Thankyou  for  trusting   WELT  TALLIS 
--       WHERE  CREATIVITY  MEETS  INNOVATION 
-🌹🌹🌹✨✨😃❤❤❤
+-----------------------------------------------
+-     WHERE  CREATIVITY  MEETS  INNOVATION 
+            🌹🌹🌹✨✨😃❤❤❤
+
+----------------------------------------------
