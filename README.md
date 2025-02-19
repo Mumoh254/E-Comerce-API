@@ -11,7 +11,7 @@ The backend API for **Majesty Shoe Collections** is built using **Express.js**, 
 - Order management (create, update, view orders)
 - Shopping cart functionality
 - Payment integration  is  MPESA 
--Email  notifications 
+- Email  notifications 
 
 ## Technologies Used
 
