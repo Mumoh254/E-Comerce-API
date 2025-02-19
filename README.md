@@ -53,6 +53,31 @@ The backend API for **Majesty Shoe Collections** is built using **Express.js**, 
  `<your-mongodb-connection-uri>`  and `<your-jwt-secret>` 
 
 
+?  These   are   the   required   Secret  Keys  For  your  Application  to  run  properly
+`💥💢💥💥💥💢💥
+DatabasePaswordAcessKey =  
+JWT_SECRET_KEYS_AUTHORIZE = 
+JWT_SECRET_REFRESH_KEY  = 
+
+PORT  =  8000
+CLOUDINARY_API_CLOUD_NAME =
+CLOUDINARY_CLOUD_API_KEY  = 
+CLOUDINARY_API_SECRET_KEY  =  
+NODE_ENV_ENVIRONMENT ="development"
+NODE_ENV_ENVIRONMENT =   "production"
+MAILER_ID=
+MAILER_ID_PASSWORD= 
+MONGOOSE_CONNECTION_STRING  = 
+💥💥💥💥💢💥
+`
+
+****
+<!-- .gitingnore    file -->
+.gitignore
+ignore  your  secret  keys  dont   push  them  to  githun  or  production
+redy  environment 
+/.env
+/node_modules
 ## API Endpoints
 
 ### 1. **Shoe Collection**
