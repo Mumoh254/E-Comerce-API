@@ -1,10 +1,10 @@
-# Majesty Shoe Collections - Backend API
+# Majesty Shoe Collections - Backend API ✔
 
-## Overview
+## ✔ Overview
 
 The backend API for **Majesty Shoe Collections** is built using **Express.js**, **Node.js**, and **MongoDB**. This API allows you to manage the shoe collection, customers, orders, and more for the online store. It is developed by **Welt Tallis Cooperation**.
 
-## Features
+##✔ Features
 
 - Manage shoe collection (add, update, delete)
 - User management (signup, login, authentication)
@@ -15,7 +15,7 @@ The backend API for **Majesty Shoe Collections** is built using **Express.js**, 
 
 ## Technologies Used
 
-- **Node.js** 
+- **Node.js** ❤
 - **Express.js** - framework
 - **MongoDB** - NoSQL database 
 - **Mongoose** - ODM 
@@ -23,7 +23,7 @@ The backend API for **Majesty Shoe Collections** is built using **Express.js**, 
 - **dotenv** - Manage environment variables
 -**MVC-SOFTWARE-DESIGN-PATTERN** -  Custom 
 
-## Installation  E_COMERCE_BACKEND_SERVER_APLLICATION_PROGRAMMING_INTERFACE
+## Installation  E_COMERCE_BACKEND_SERVER_APLLICATION_PROGRAMMING_INTERFACE 😂😊😂😂🎉🤳
 
 1. **Clone the repository**:
     ```bash
@@ -114,3 +114,7 @@ This project is licensed under the MIT License
 - Developed by  ** WELT  TALLIS  COOPERATION ***
 - CONTACTS  WELT  TALLIS  +254740045355
 - EMAIL  WELT  TALLIS  *peteritumo2030@gmail.com*
+- Buy  Me  Coffeee : Mpesa  +254740045355
+- Thankyou  for  trusting   WELT  TALLIS 
+-       WHERE  CREATIVITY  MEETS  INNOVATION 
+🌹🌹🌹✨✨😃❤❤❤
