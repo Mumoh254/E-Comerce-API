@@ -13,8 +13,15 @@ const { logIn } = require("../controllers/authController/login");
 const { resetPassword } = require("../controllers/authController/resetPass");
 const { forgotPasswordToken } = require("../controllers/authController/forgotPasswordToken");
 const { logInAdmin } = require("../controllers/AdminController/loginAdmin");
+const   { userCart}  =  require("../controllers/authController/userCart")
 
 const router = express.Router();
+
+
+//   cart
+router.post("/user/cart" , authMiddleware  ,  userCart )
+
+
 
 // Admin routes
 router.get("/allusers", authMiddleware, isAdmin, getUsers);

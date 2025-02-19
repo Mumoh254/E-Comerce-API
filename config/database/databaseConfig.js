@@ -1,8 +1,6 @@
 
-  const  mongoose    =  require("mongoose");
-
-
-
+const mongoose = require("mongoose");
+const asyncHandler = require("express-async-handler");
 
 // Database connection function
 const connectToDatabase = async () => {
@@ -21,6 +19,6 @@ const connectToDatabase = async () => {
 };
 
 
-module.exports  =  {
+module.exports = {
     connectToDatabase
 }

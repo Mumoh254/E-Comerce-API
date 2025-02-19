@@ -5,40 +5,48 @@ var cartSchema = new mongoose.Schema({
   products: [
     {
       product: {
-        type: mongoose.Types.ObjectId,
+        type: mongoose.Schema.Types.ObjectId,
         ref: "product",
       },
+
       count: {
         type: Number,
         required: true,
       },
+
       color: {
         type: String,
-        required: false, 
+        required: false,
       }
+
     }
   ],
   paymentIntent: {
-    type: String, 
-    required: true, 
+    type: String
+
   },
+
   orderStatus: {
     type: String,
-    default: "Not Processed", 
+    default: "Not Processed",
     enum: [
       "Not Processed", "Processed",
       "Cash On Delivery", "Processing",
       "Dispatched", "Cancelled", "Completed"
     ]
   },
+
   orderedBy: {
     type: mongoose.Types.ObjectId,
     ref: "user",
     required: true,
   },
-  price:  Number,
-  cartTotal:  Number,
-  totalAfterDiscoubnt:  Number,
+
+  price: Number,
+
+  cartTotal: Number,
+  totalAfterDiscount: Number,
+  
 });
 
 // Export the model

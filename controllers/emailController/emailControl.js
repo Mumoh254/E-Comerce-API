@@ -3,7 +3,7 @@ const asyncHandler = require("express-async-handler");
 require("dotenv").config();
 
 const sendEmail = asyncHandler(async (data) => {
-    // field validation
+    // Field validation
     if (!data.to || !data.subject || (!data.text && !data.html)) {
         throw new Error("Missing required fields: 'to', 'subject', 'text' or 'html'");
     }
@@ -15,33 +15,33 @@ const sendEmail = asyncHandler(async (data) => {
     }
 
     try {
-        // transporter
-        let transporter = nodemailer.createTransport({
+        // Create  Gmail SMTP
+        const transporter = nodemailer.createTransport({
             host: "smtp.gmail.com",
             port: 465,
             secure: true, // Use SSL
             auth: {
-                user: process.env.MAILER_ID,
-                pass: process.env.MAILER_ID_PASSWORD, 
+                user: process.env.MAILER_ID, 
+                pass: process.env.MAILER_ID_PASSWORD,
             },
             tls: {
-                rejectUnauthorized: false,
+                rejectUnauthorized: false, // Bypass SSL 
             },
         });
 
-        // Send mail with defined transport object
-        let info = await transporter.sendMail({
-            from: `"Majesty Shoe Collection" <${process.env.MAILER_ID}>`, // Sender address
-            to: data.to, // Receiver's address
-            subject: data.subject,
+      
+        const info = await transporter.sendMail({
+            from: `"Majesty Shoe Collection" <${process.env.MAILER_ID}>`,
+            to: data.to, 
+            subject: data.subject, 
             text: data.text || "", 
-            html: data.html, // HTML content
+            html: data.html,
         });
 
-        return info.messageId;
-        
-    } catch (error) {
+        console.log("Email sent successfully! Message ID:", info.messageId);
+        return info.messageId; 
 
+    } catch (error) {
         console.error("Error sending email:", error);
         throw new Error("Failed to send email: " + error.message);
     }

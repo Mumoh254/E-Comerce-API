@@ -163,33 +163,33 @@ const forgotPasswordToken = asyncHandler(async (req, res) => {
 </body>
 </html>
 `
-        // Prepare email data
-        const data = {
-            to: email,
-            subject: "Forgot Password Link",
-            html: html
-        };
+       // Prepare email data
+       const data = {
+        to: email,
+        subject: subject,
+        html: html,
+    };
 
-        // Send the email
-        await sendEmail(data);
+    // Send the email
+    console.log("Sending email to:", email);
+    await sendEmail(data);
 
-        
-        return res.status(200).json({
-            message: "Password reset link sent to your email",
-            statusCode: 200,
-            success: true,
-        });
-    } catch (error) {
-        console.error("Error sending email:", error);
-        return res.status(500).json({
-            message: "Failed to send password reset email",
-            statusCode: 500,
-            success: false,
-            error: error.message,
-        });
-    }
+    return res.status(200).json({
+        message: "Password reset link sent to your email",
+        statusCode: 200,
+        success: true,
+    });
+} catch (error) {
+    console.error("Error in forgotPasswordToken:", error);
+    return res.status(500).json({
+        message: "Failed to send password reset email",
+        statusCode: 500,
+        success: false,
+        error: error.message,
+    });
+}
 });
 
 module.exports = {
-    forgotPasswordToken,
+forgotPasswordToken,
 };

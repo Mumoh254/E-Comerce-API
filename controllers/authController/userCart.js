@@ -1,85 +1,66 @@
 const asyncHandler = require("express-async-handler");
 const userModel = require("../../models/userModel");
-const Cart = require("../../models/cartModel");
+const cartModel = require("../../models/cartModel");
 const productModel = require("../../models/productModel"); 
-const { validateMongoDbId } = require("../../utils/validateMongoDbId");
+const { validateMongoDbId } = require("../../utils/validateMongoId");
+const   mongoose  =  require("mongoose")
 
 // Add or Update User Cart
-const userCart = asyncHandler(async (req, res) => {
+const userCart = asyncHandler(async (req, res, next) => {
     const { cart } = req.body;
     const { _id } = req.user; 
-    validateMongoDbId(_id); 
 
+    // Validate user ID
+    validateMongoDbId(_id);
 
     try {
-
         let products = [];
-        let cartTotal = 0;
 
-        // Check if the user already has a cart
-        const alreadyExistCart = await Cart.findOne({ orderedBy: _id });
-        if (alreadyExistCart) {
-            await alreadyExistCart.remove();
+        // Find the user
+        const user = await userModel.findById(_id);
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
         }
 
-       
+        // Check if a cart already exists for the user
+        const alreadyExistCart = await cartModel.findOne({ orderedBy: user._id });
+        if (alreadyExistCart) {
+            await alreadyExistCart.deleteOne(); 
+        }
+
         for (let i = 0; i < cart.length; i++) {
             let object = {};
+        
+            if (!mongoose.Types.ObjectId.isValid(cart[i]._id)) {
+                return res.status(400).json({ message: `Invalid Product ID: ${cart[i]._id}` });
+            }
+        
             object.product = cart[i]._id;
             object.count = cart[i].count;
             object.color = cart[i].color;
-
-            // Fetch the product price
+        
             let getPrice = await productModel.findById(cart[i]._id).select("price").exec();
-            object.price = getPrice.price;
-
-            products.push(object);
-            cartTotal += object.price * object.count;
+            if (getPrice) {
+                object.price = getPrice.price;
+                products.push(object);
+            }
         }
 
-        // Create a new cart
-        const newCart = await new Cart({
-            orderedBy: _id,
-            orderedByName: req.user.name,
-            orderedByPhoneNumber: req.user.orderedByPhoneNumber,
-            products: products,
-            totalPrice: cartTotal,
-        }).save();
+        let   cartTotal  =  0;
+        for (let  i  =  0 ;  i  < products.length;  i++){
+            cartTotal  =  cartTotal + products[i].price * products[i].count;
 
-        res.status(200).json({
-            data: newCart,
-            success: true,
-            message: "Cart updated successfully",
+            console.log(cartTotal);
+            console.log(products)
+        }
+     
+    } catch (error) {
+        res.status(500).json({
+            message: error.message
         });
-    } catch (error) {
-        throw new Error(error.message);
     }
 });
-
-// Get User Cart
-const getUserCart = asyncHandler(async (req, res) => {
-    const { _id } = req.user; 
-    validateMongoDbId(_id); 
-    try {
-        const cart = await Cart.findOne({ orderedBy: _id });
-        if (cart) {
-            res.status(200).json({
-                data: cart,
-                success: true,
-            });
-        } else {
-            res.status(404).json({
-                message: "Cart not found",
-                success: false,
-            });
-        }
-    } catch (error) {
-        throw new Error(error.message);
-    }
-});
-
 
 module.exports = {
     userCart,
-    getUserCart,
 };
