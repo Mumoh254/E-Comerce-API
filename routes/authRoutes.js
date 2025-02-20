@@ -13,14 +13,20 @@ const { logIn } = require("../controllers/authController/login");
 const { resetPassword } = require("../controllers/authController/resetPass");
 const { forgotPasswordToken } = require("../controllers/authController/forgotPasswordToken");
 const { logInAdmin } = require("../controllers/AdminController/loginAdmin");
-const   { userCart}  =  require("../controllers/authController/userCart")
-
+const   { userCart  ,   getUserCart  ,  emptyCart  ,    applyCoupon }  =  require("../controllers/authController/userCart")
+const   {  createOrder }    =  require("../controllers/orders/createOrder")
 const router = express.Router();
 
 
 //   cart
 router.post("/user/cart" , authMiddleware  ,  userCart )
+router.get("/cart" , authMiddleware  ,   getUserCart)
+router.delete("/clear/cart" , authMiddleware  ,  emptyCart )
 
+router.post("/cart/applycoupen" , authMiddleware  ,    applyCoupon)
+
+//   make  an  order request
+router.post("/cart/order" , authMiddleware  ,    createOrder)
 
 
 // Admin routes

@@ -33,7 +33,7 @@ const createUser = asyncHandler(async (req  ,   res ,   next) => {
             success: false
         });
     } else {
-        // Determine role (only two admins allowed)
+        // Determine role //  only  two  admins 
         const adminCount = await userModel.countDocuments({ role: "admin" });
         let role = "user";
         if (adminCount < 2) {
@@ -41,7 +41,8 @@ const createUser = asyncHandler(async (req  ,   res ,   next) => {
         }
 
         // Hash the password
-        const saltRounds = parseInt(process.env.SALT_ROUNDS) || 10; // Use env variable or default to 10
+        const saltRounds = parseInt(process.env.SALT_ROUNDS) || 10; 
+   
         const hashedPassword = await bcrypt.hash(password, saltRounds);
           console.log({
             message:  "hashed  pass",

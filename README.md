@@ -54,7 +54,7 @@ The backend API for **Majesty Shoe Collections** is built using **Express.js**, 
 
 
 **These   are   the   required   Secret  Keys  For  your  Application  to  run  properly*
-`-------💥💢💥💥💥💢💥-----
+`-------💥💢💥💥💥💢💥
 - DatabasePaswordAcessKey
 - JWT_SECRET_KEYS_AUTHORIZE = 
 - JWT_SECRET_REFRESH_KEY  = 
@@ -107,7 +107,7 @@ redy  environment
 
 ### 4. **Shopping Cart**
 
-- **POST** `/api/cart` - Add a product to the shopping cart
+- **POST** `http://localhost:8000/apiV1/majestycollections/user/cart` - Add a product to the shopping cart  and  cal
 - **GET** `/api/cart` - Get the current user's shopping cart
 - **DELETE** `/api/cart/:id` - Remove an item from the shopping cart
 
