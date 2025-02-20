@@ -65,7 +65,7 @@ const createOrder = asyncHandler(async (req, res) => {
 
 const getOrders = asyncHandler(async (req, res) => {
     try {
-        // Fetch all orders and populate orderedBy (User details)
+      
         const orders = await orderModel.find()
             .populate({
                 path: "orderedBy",
@@ -73,7 +73,7 @@ const getOrders = asyncHandler(async (req, res) => {
             })
             .populate({
                 path: "products.product",
-                select: "title price", // title and price  product
+                select: "title price",
             }).exec()
 
         if (!orders || orders.length === 0) {
@@ -94,13 +94,10 @@ const getOrders = asyncHandler(async (req, res) => {
 
 
 
-
-
-
 const getOrderById = asyncHandler(async (req, res) => {
-    const { orderId } = req.params; // Get order ID from URL params
+    const { orderId } = req.params;
 
-    console.log("Received Order ID:", orderId); // Debugging
+    console.log("Received Order ID:", orderId);
 
     // Validate order ID
     if (!mongoose.Types.ObjectId.isValid(orderId)) {
@@ -111,7 +108,7 @@ const getOrderById = asyncHandler(async (req, res) => {
     }
 
     try {
-        // Find the order by ID and populate user and product details
+        // Find the order by ID 
         const order = await orderModel.findById(orderId)
         .populate("orderedBy", "name email") 
         .populate("products.product", "title price") 
@@ -144,40 +141,53 @@ const getOrderById = asyncHandler(async (req, res) => {
 
 
 
-
-
-const updateOrderStatus = asyncHandler(async (req, res) => {
-
-    console.log( req.params)
-    const { orderId } = req.params; // Get order ID
-    const { newStatus } = req.body; 
-
-    console.log(` order  id  ${orderId}`);
-    console.log(` new satatus  ${ newStatus}`)
-
-    validateMongoDbId(orderId); 
-
+const sendThankYouEmail = require("../emailController/thankYouMail");
+const updateOrderStatus = async (req, res) => {
     try {
-        // Find and update the order
-        const updatedOrder = await orderModel.findByIdAndUpdate(
-            orderId,
-            { orderStatus: newStatus },
-            { new: true, runValidators: true }
-        ).populate("orderedBy", "name email"); // Populate user info
+        const { id } = req.params;
+        const { orderStatus } = req.body;
 
-        if (!updatedOrder) {
+      
+        const order = await orderModel.findById(id).populate("orderedBy", "email name");
+
+        if (!order) {
             return res.status(404).json({ message: "Order not found" });
         }
 
-        res.status(200).json({
-            success: true,
-            message: "Order status updated successfully",
-            order: updatedOrder
-        });
+       
+        if (order.orderStatus === "Completed") {
+            return res.status(400).json({ message: "Order is already completed" });
+        }
+
+        // Update order status
+        order.orderStatus = orderStatus;
+        await order.save();
+
+        // Send email only when order is marked "Completed"
+        if (orderStatus === "Completed" && order.orderedBy?.email) {
+            const emailData = {
+                to: order.orderedBy.email, // Use populated email
+                subject: "Thank You for Shopping with Majesty Shoe Collection! 🎉",
+                html: `
+                    <h2>Dear ${order.orderedBy.name || "Valued Customer"},</h2>
+                    <p>We appreciate your purchase from <b>Majesty Shoe Collection!</b> 🎉</p>
+                    <p>Your order <b>#${order._id}</b> has been successfully completed.</p>
+                    <p>We look forward to serving you again soon.</p>
+                    <p>Best regards,<br>Majesty Shoe Collection</p>
+                `,
+            };
+
+            await sendEmail(emailData);
+            console.log(`✅ Thank-you email sent to ${order.orderedBy.email}`);
+        }
+
+        return res.json({ message: "Order status updated successfully", order });
+
     } catch (error) {
-        res.status(500).json({ message: "Error updating order status", error: error.message });
+        console.error("❌ Error updating order status:", error);
+        return res.status(500).json({ message: "Internal server error" });
     }
-});
+};
 
 
 

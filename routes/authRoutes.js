@@ -34,13 +34,14 @@ router.get("/user/getorders/:id" , authMiddleware  ,      getOrderById )
 
 
 router.get("/admin/getorders" , authMiddleware  ,  isAdmin ,     getOrders)
-router.put("/admin/update/orderstatus" , authMiddleware  ,  isAdmin ,     updateOrderStatus )
+router.put("/update/orderstatus/:id " , authMiddleware  ,  isAdmin ,    updateOrderStatus )
 
 
 
 // Admin routes
 router.get("/allusers", authMiddleware, isAdmin, getUsers);
 router.get("/getuser/:id", authMiddleware, isAdmin, getUser);
+router.put("/getuser/updatestatus/:id", authMiddleware, isAdmin,   updateOrderStatus);
 // router.put("/blockuser/:id", authMiddleware, isAdmin, blockUser); 
 // router.put("/unblockuser/:id", authMiddleware, isAdmin, unblockUser);  
 router.delete("/deleteuser/:id", authMiddleware, isAdmin, deleteUser);

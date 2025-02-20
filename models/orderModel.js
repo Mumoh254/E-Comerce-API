@@ -32,8 +32,10 @@ var orderSchema = new mongoose.Schema({
       "Dispatched",
       "Cancelled",
       "Delivered",
-      "pending"
+      "pending"  ,
+      "Completed"
     ]
+    
   },
 
 
