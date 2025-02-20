@@ -2,7 +2,7 @@ const multer = require("multer");
 const sharp = require("sharp");
 const path = require("path");
 
-// Multer storage configuration
+// Multer storage config
 const multerStorage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, path.join(__dirname, '../public/images'));
@@ -22,7 +22,7 @@ const multerFilter = (req, file, cb) => {
   }
 };
 
-// Multer upload middleware
+// Multer upload midd
 const uploadPhoto = multer({
   storage: multerStorage,
   fileFilter: multerFilter,
@@ -31,7 +31,7 @@ const uploadPhoto = multer({
 
 // Image resize function using sharp 
 const productImageResize = async (req, res, next) => {
-  // If no files are uploaded, proceed
+  // If no files are uploaded  next
   if (!req.files) return next();  
 
   try {
@@ -50,7 +50,7 @@ const productImageResize = async (req, res, next) => {
   }
 };
 
-// Image resize function using sharp 
+// Image resize  using sharp 
 const blogImageResize = async (req, res, next) => {
   if (!req.files) return next();  
 
