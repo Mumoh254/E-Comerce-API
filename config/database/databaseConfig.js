@@ -1,24 +1,27 @@
-
 const mongoose = require("mongoose");
-const asyncHandler = require("express-async-handler");
 
-// Database connection function
 const connectToDatabase = async () => {
-    const DATABASEURL = process.env.MONGOOSE_CONNECTION_STRING;
-    if (!DATABASEURL) {
-        console.log("There's no connection string to the database.");
-        return;
-    }
-
     try {
-        await mongoose.connect(DATABASEURL);
-        console.log("Database connection established");
+        const DATABASEURL = process.env.MONGOOSE_CONNECTION_STRING;
+
+        if (!DATABASEURL) {
+            console.log("❌ No database connection string found.");
+            process.exit(1); 
+        }
+
+        const connection = await mongoose.connect(DATABASEURL);
+
+        console.log({
+            message:  "✅ Database connection established successfully.",
+            sucess:  true
+        });
+
+        return connection;
+
     } catch (error) {
-        console.log("Error connecting to the database:", error.message);
+        console.error("❌ Error connecting to the database:", error.message);
+        process.exit(1); 
     }
 };
 
-
-module.exports = {
-    connectToDatabase
-}
+module.exports = { connectToDatabase };
