@@ -14,7 +14,7 @@ const { resetPassword } = require("../controllers/authController/resetPass");
 const { forgotPasswordToken } = require("../controllers/authController/forgotPasswordToken");
 const { logInAdmin } = require("../controllers/AdminController/loginAdmin");
 const   { userCart  ,   getUserCart  ,  emptyCart  ,    applyCoupon }  =  require("../controllers/authController/userCart")
-const   {  createOrder }    =  require("../controllers/orders/createOrder")
+const   {  createOrder  ,  getOrders  , getOrderById  ,   updateOrderStatus }    =  require("../controllers/orders/createOrder")
 const router = express.Router();
 
 
@@ -27,6 +27,15 @@ router.post("/cart/applycoupen" , authMiddleware  ,    applyCoupon)
 
 //   make  an  order request
 router.post("/cart/order" , authMiddleware  ,    createOrder)
+
+
+// get orders for  admin
+router.get("/user/getorders/:id" , authMiddleware  ,      getOrderById )
+
+
+router.get("/admin/getorders" , authMiddleware  ,  isAdmin ,     getOrders)
+router.put("/admin/update/orderstatus" , authMiddleware  ,  isAdmin ,     updateOrderStatus )
+
 
 
 // Admin routes
