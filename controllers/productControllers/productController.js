@@ -2,31 +2,51 @@ const express = require("express");
 const productModel = require("../../models/productModel");
 const slugify = require("slugify");
 const { httpRequestToRequestData } = require("@sentry/core");
+// const { cloudinaryUploadImage } = require('../utils/cloudinary');
+const fs = require('fs-extra');
 
-const createProduct = async (req, res, next) => {
+const   createProduct = async (req, res, next) => {
   try {
-    if (req.body.title) {
-      req.body.slug = slugify(req.body.title);
+    const images = [];
+    
+    // Upload images to Cloudinary
+    if (req.files && req.files.length > 0) {
+      for (const file of req.files) {
+        const result = await cloudinaryUploadImage(file.path, 'products');
+        images.push(result);
+      }
     }
-    // Create the new product
-    const newProduct = await productModel.create(req.body);
-    if (newProduct) {
-      return res.status(201).json({
-        message: "Product created successfully!",
-        data: newProduct,
-        success: true,
-      });
-    } else {
-      return res.status(500).json({
-        messaage: "Product  creation  failed !",
-        sucess: false,
-        data: null
-      })
+
+    // Create product with image URLs
+    const productData = {
+      ...req.body,
+      images
+    };
+
+    if (productData.title) {
+      productData.slug = slugify(productData.title);
     }
+
+    const newProduct = await productModel.create(productData);
+    
+    return res.status(201).json({
+      message: "Product created successfully!",
+      data: newProduct,
+      success: true,
+    });
   } catch (error) {
+    // Cleanup uploaded files if error occurs
+    if (req.files) {
+      for (const file of req.files) {
+        await fs.unlink(file.path).catch(() => {});
+      }
+    }
+    
     console.error("Error occurred:", error.message);
     return res.status(500).json({
-      message: "title  should be  unique  while creating the product.",
+      message: error.message.includes('E11000') 
+        ? "Product title must be unique" 
+        : "Error creating product",
       error: error.message,
       success: false,
     });
@@ -35,40 +55,50 @@ const createProduct = async (req, res, next) => {
 
 const updateProduct = async (req, res, next) => {
   try {
-    const { id } = req.params; 
-    const updatedProductData = req.body;
+    const { id } = req.params;
+    const updates = { ...req.body };
+    const newImages = [];
 
-    // Check if the product exists
-    const product = await productModel.findById(id);
-    if (!product) {
-      return res.status(404).json({
-        message: "Product not found.",
-        success: false,
-      });
+    // Handle new image uploads
+    if (req.files && req.files.length > 0) {
+      for (const file of req.files) {
+        const result = await cloudinaryUploadImage(file.path, 'products');
+        newImages.push(result);
+      }
+      updates.$push = { images: { $each: newImages } };
     }
 
-    // Generate slug whentitle is updated
-    if (req.body.title) {
-      req.body.slug = slugify(req.body.title);
+    if (updates.title) {
+      updates.slug = slugify(updates.title);
     }
 
-    // Update the product
-    const updatedProduct = await productModel.findByIdAndUpdate(id, req.body, { new: true });
+    const updatedProduct = await productModel.findByIdAndUpdate(
+      id,
+      updates,
+      { new: true }
+    );
+
     return res.status(200).json({
       message: "Product updated successfully!",
       data: updatedProduct,
       success: true,
     });
   } catch (error) {
+    // Cleanup uploaded files if error occurs
+    if (req.files) {
+      for (const file of req.files) {
+        await fs.unlink(file.path).catch(() => {});
+      }
+    }
+    
     console.error("Error occurred:", error.message);
     return res.status(500).json({
-      message: "An error occurred while updating the product.",
+      message: "Error updating product",
       error: error.message,
       success: false,
     });
   }
 };
-
 const deleteProduct = async (req, res, next) => {
   try {
     const { id } = req.params; 

@@ -3,25 +3,25 @@ const mongoose = require("mongoose");
 const productSchema = mongoose.Schema({
     title: {
         type: String,
-        required: [true, "Name of this product is required"],
+    
         trim: true
     },
     slug: {
         type: String,
         lowercase: true,
-        required: true
+ 
     },
     description: {
         type: String,
-        required: true,
+       
     },
     price: {
         type: Number,
-        required: true,
+        
     },
     category: {
         type: String,
-        required: true,
+       
         ref: "category"
     },
     quantity: {
@@ -34,7 +34,7 @@ const productSchema = mongoose.Schema({
     },
     color: {
         type: String,
-        required: true
+      
     },
     ratings: [
         {
@@ -44,7 +44,7 @@ const productSchema = mongoose.Schema({
     ],
     brand: {
         type: String,
-        required:  true
+    
      
     },
     sold: {

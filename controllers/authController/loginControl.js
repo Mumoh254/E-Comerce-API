@@ -14,59 +14,46 @@ app.use(express.json());
 const logInUser = async (req, res) => {
     const { email, password } = req.body;
     console.log("Login attempt with email:", email);
+
     try {
-        // Check if the user exists
         const user = await userModel.findOne({ email });
-
-        if (user) {
-            
-            // Compare the password
-            console.log("User found:", user);
-            const isPasswordCorrect = await user.isPasswordMatched(password);
-            console.log("Is password correct?", isPasswordCorrect);
-
-            console.log("Stored password hash: ", user.password);
-            console.log("Plain password provided: ", password);
-            console.log("Is password correct? ", isPasswordCorrect);
-
-            if (isPasswordCorrect) {
-                const token = generateToken(user.id);
-                const refreshToken = await generateRefreshToken(user.id);
-
-                const updatedUser = await userModel.findByIdAndUpdate(
-                    user.id,
-                    { refreshToken: refreshToken },
-                    { new: true }
-                );
-
-                res.cookie('refreshToken', refreshToken, {
-                    httpOnly: true,
-                    maxAge: 72 * 60 * 60 * 1000,
-                    secure: process.env.NODE_ENV === 'production',
-                    expires: new Date(Date.now() + 72 * 60 * 60 * 1000),
-                    path: "/"
-                });
-
-                return res.json({
-                    message: "Login successful",
-                    success: true,
-                    token,
-                    refreshToken,
-                    data: updatedUser,
-                });
-            } else {
-                console.log("Invalid credentials: Password mismatch");
-                return res.status(401).json({
-                    message: "Invalid credentials",
-                    success: false,
-                });
-            }
-        } else {
+        if (!user) {
             return res.status(404).json({
                 message: "User not found",
                 success: false,
             });
         }
+
+        const isPasswordCorrect = await user.isPasswordMatched(password);
+        if (!isPasswordCorrect) {
+            console.log("Invalid credentials: Password mismatch");
+            return res.status(401).json({
+                message: "Invalid credentials",
+                success: false,
+            });
+        }
+
+        const token = generateToken(user.id);
+        const refreshToken = await generateRefreshToken(user.id);
+
+        await userModel.findByIdAndUpdate(user.id, { refreshToken }, { new: true });
+
+        res.cookie('refreshToken', refreshToken, {
+            httpOnly: true,
+            maxAge: 72 * 60 * 60 * 1000,
+            secure: process.env.NODE_ENV === 'production',
+            expires: new Date(Date.now() + 72 * 60 * 60 * 1000),
+            path: "/"
+        });
+
+        const { password: _, ...userData } = user._doc;  // Omit password from response
+        return res.json({
+            message: "Login successful",
+            success: true,
+            token,
+            data: userData,  // Don't return refreshToken
+        });
+
     } catch (error) {
         console.error("Error during login:", error.message);
         return res.status(500).json({
@@ -77,9 +64,9 @@ const logInUser = async (req, res) => {
     }
 };
 
+// Handle refresh token
 const handleRefreshToken = async (req, res) => {
-    const cookies = req.cookies;
-    const refreshToken = cookies.refreshToken;
+    const refreshToken = req.cookies.refreshToken;
 
     if (!refreshToken) {
         return res.status(403).json({
@@ -89,52 +76,42 @@ const handleRefreshToken = async (req, res) => {
     }
 
     try {
-       
-        console.log("Received refreshToken:", refreshToken);
-        
-   
         const decoded = jwt.verify(refreshToken, process.env.JWT_SECRET_KEYS_AUTHORIZE);
-        
-        console.log("Decoded refreshToken:", decoded); 
+        console.log("Decoded refreshToken:", decoded);
 
-        const newAccessToken = generateToken(decoded._id);
-        const newRefreshToken = await generateRefreshToken(decoded._id);
-
-        const user = await userModel.findByIdAndUpdate(
-            decoded._id,
-            { refreshToken: refreshToken },
-            { new: true } ````
-        );
-
-        
-
-
-        if (!user) 
-            {
-            return res.status(404).json({
-                message: "User not found",
+        const user = await userModel.findById(decoded._id);
+        if (!user || user.refreshToken !== refreshToken) {
+            return res.status(403).json({
+                message: "Invalid refresh token",
                 success: false,
             });
         }
-         
-        res.cookie('refreshToken', newRefreshToken, {
+
+        const newAccessToken = generateToken(user._id);
+        const newRefreshToken = await generateRefreshToken(user._id);
+
+        // Append new refreshToken to the array
+        await userModel.findByIdAndUpdate(user._id, {
+            $push: { refreshTokens: { token: newRefreshToken, expiresAt: new Date(Date.now() + 72 * 60 * 60 * 1000) } }
+        });
+        
+
+        res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
-            maxAge: 72 * 60 * 60 * 1000,
+            maxAge: 72 * 60 * 60 * 1000, // 3 days
             secure: process.env.NODE_ENV === 'production',
             expires: new Date(Date.now() + 72 * 60 * 60 * 1000),
             path: "/"
         });
+        
 
         return res.json({
             message: "New tokens generated successfully",
             success: true,
             token: newAccessToken,
-            refreshToken: newRefreshToken,
-            data: user,
         });
 
-    } catch (error)
-     {
+    } catch (error) {
         console.error("Error refreshing token:", error.message);
         return res.status(500).json({
             message: "Error refreshing the token",
@@ -144,5 +121,4 @@ const handleRefreshToken = async (req, res) => {
     }
 };
 
-
-module.exports = { logInUser, handleRefreshToken }; 
+module.exports = { logInUser, handleRefreshToken };

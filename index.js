@@ -46,10 +46,10 @@ if (process.env.NODE_ENV_ENVIRONMENT === "development") {
 
 // CORS configuration
 app.use(cors({
-    origin: "http://localhost:8000", 
+    origin: "http://localhost:5000", // Allow requests from frontend
+    credentials: true, // Allow cookies & authentication headers
     methods: ["GET", "POST", "PUT", "DELETE"],
-    allowedHeaders: ["content-type"],
-    credentials: true,
+    allowedHeaders: ["Content-Type", "Authorization"], // ✅ Explicitly allow "Authorization" header
 }));
 
 app.use(cookieParser());
