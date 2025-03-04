@@ -1,11 +1,22 @@
 const multer = require("multer");
 const sharp = require("sharp");
 const path = require("path");
+const fs = require("fs");
 
-// Multer storage config
+// Ensure upload directories exist
+const ensureDirExists = (dir) => {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+};
+
+const uploadDir = path.join(__dirname, '../public/images');
+ensureDirExists(uploadDir);
+
+// Multer storage configuration
 const multerStorage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, '../public/images'));
+    cb(null, uploadDir);
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
@@ -13,7 +24,7 @@ const multerStorage = multer.diskStorage({
   },
 });
 
-// Multer file filter to allow only images
+// File filter to allow only images
 const multerFilter = (req, file, cb) => {
   if (file.mimetype.startsWith('image')) {
     cb(null, true);
@@ -22,51 +33,64 @@ const multerFilter = (req, file, cb) => {
   }
 };
 
-// Multer upload midd
+// Multer upload middleware (max size: 2MB)
 const uploadPhoto = multer({
   storage: multerStorage,
   fileFilter: multerFilter,
-  limits: { fileSize: 2000000 }, // 2MB file size limit
+  limits: { fileSize: 2 * 1024 * 1024 }, // 2MB file size limit
 });
 
-// Image resize function using sharp 
+// Image resizing function (for products)
 const productImageResize = async (req, res, next) => {
-  // If no files are uploaded  next
-  if (!req.files) return next();  
+  if (!req.files || req.files.length === 0) return next(); // Check if files exist
+
+  const productDir = path.join('public', 'images', 'products');
+  ensureDirExists(productDir);
 
   try {
     await Promise.all(
       req.files.map(async (file) => {
+        const outputPath = path.join(productDir, file.filename);
         await sharp(file.path)
           .resize(300, 300)  
           .toFormat('jpeg')
-          .jpeg({ quality: 90 })  // JPEG quality to 90
-          .toFile(path.join('public', 'images', 'products', file.filename)); 
+          .jpeg({ quality: 90 })
+          .toFile(outputPath);
+        
+        // Delete original file after resizing (optional)
+        fs.unlinkSync(file.path);
       })
     );
-    next();  
+    next();
   } catch (error) {
-    next(error);  
+    next(error);
   }
 };
 
-// Image resize  using sharp 
+// Image resizing function (for blogs)
 const blogImageResize = async (req, res, next) => {
-  if (!req.files) return next();  
+  if (!req.files || req.files.length === 0) return next();
+
+  const blogDir = path.join('public', 'images', 'blogs');
+  ensureDirExists(blogDir);
 
   try {
     await Promise.all(
       req.files.map(async (file) => {
+        const outputPath = path.join(blogDir, file.filename);
         await sharp(file.path)
-          .resize(300, 300)  // Resize to 300x300
+          .resize(300, 300)
           .toFormat('jpeg')
-          .jpeg({ quality: 90 })  // JPEG quality to 90
-          .toFile(path.join('public', 'images', 'blogs', file.filename)); 
+          .jpeg({ quality: 90 })
+          .toFile(outputPath);
+
+        // Delete original file after resizing (optional)
+        fs.unlinkSync(file.path);
       })
     );
-    next();  
+    next();
   } catch (error) {
-    next(error); 
+    next(error);
   }
 };
 

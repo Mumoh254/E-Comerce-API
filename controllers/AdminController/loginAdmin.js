@@ -18,6 +18,10 @@ const logInAdmin = async (req, res) => {
     try {
         // 🔍 Check if the user exists
         const user = await userModel.findOne({ email });
+        console.log({
+            message:  "user  found",
+            data: user
+        })
 
         if (!user) {
             return res.status(404).json({
@@ -72,7 +76,8 @@ const logInAdmin = async (req, res) => {
             message: "Admin login successful",
             success: true,
             token,
-            data: adminData,
+            data: adminData
+        
         });
 
     } catch (error) {

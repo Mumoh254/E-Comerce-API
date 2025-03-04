@@ -8,7 +8,14 @@ const { isAdmin } = require("../middleWares/isAdmin");
 const { uploadPhoto } = require("../middleWares/uploadImages");
 
 // Product routes
-router.post("/create", authMiddleware, isAdmin, createProduct);
+router.post(
+    "/create",
+    authMiddleware,
+    isAdmin,
+    uploadPhoto.array('images', 10),
+    createProduct
+  );
+  
 router.put("/update/:id", authMiddleware, isAdmin, updateProduct);
 router.get("/find/:id", authMiddleware, getaProduct);
 router.delete("/delete/:id", authMiddleware, isAdmin, deleteProduct);

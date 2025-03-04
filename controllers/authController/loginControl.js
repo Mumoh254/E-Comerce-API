@@ -10,59 +10,7 @@ require("dotenv").config();
 app.use(cookieParser());
 app.use(express.json());
 
-// Log in the user
-const logInUser = async (req, res) => {
-    const { email, password } = req.body;
-    console.log("Login attempt with email:", email);
 
-    try {
-        const user = await userModel.findOne({ email });
-        if (!user) {
-            return res.status(404).json({
-                message: "User not found",
-                success: false,
-            });
-        }
-
-        const isPasswordCorrect = await user.isPasswordMatched(password);
-        if (!isPasswordCorrect) {
-            console.log("Invalid credentials: Password mismatch");
-            return res.status(401).json({
-                message: "Invalid credentials",
-                success: false,
-            });
-        }
-
-        const token = generateToken(user.id);
-        const refreshToken = await generateRefreshToken(user.id);
-
-        await userModel.findByIdAndUpdate(user.id, { refreshToken }, { new: true });
-
-        res.cookie('refreshToken', refreshToken, {
-            httpOnly: true,
-            maxAge: 72 * 60 * 60 * 1000,
-            secure: process.env.NODE_ENV === 'production',
-            expires: new Date(Date.now() + 72 * 60 * 60 * 1000),
-            path: "/"
-        });
-
-        const { password: _, ...userData } = user._doc;  // Omit password from response
-        return res.json({
-            message: "Login successful",
-            success: true,
-            token,
-            data: userData,  // Don't return refreshToken
-        });
-
-    } catch (error) {
-        console.error("Error during login:", error.message);
-        return res.status(500).json({
-            message: "Error occurred during login",
-            success: false,
-            error: error.message,
-        });
-    }
-};
 
 // Handle refresh token
 const handleRefreshToken = async (req, res) => {
@@ -120,5 +68,71 @@ const handleRefreshToken = async (req, res) => {
         });
     }
 };
+
+
+
+
+
+const logInUser = async (req, res) => {
+    const { email, password } = req.body;
+    console.log("Login attempt with email:", email);
+
+    try {
+        // 🔍 Check if user exists
+        const user = await userModel.findOne({ email });
+        if (!user) {
+            console.warn("User not found:", email);
+            return res.status(404).json({ message: "User not found", success: false });
+        }
+
+        // 🔑 Check if password is correct
+        const isPasswordCorrect = await user.isPasswordMatched(password);
+        if (!isPasswordCorrect) {
+            console.warn("Invalid credentials: Password mismatch for", email);
+            return res.status(401).json({ message: "Invalid credentials", success: false });
+        }
+
+        // 🔐 Generate Tokens
+        const token = generateToken(user); 
+        const refreshToken = await generateRefreshToken(user._id);
+
+        console.log("Access token generated:", token);
+        console.log("Refresh token generated:", refreshToken);
+
+        // 🔄 Update user with refreshToken
+        await userModel.findByIdAndUpdate(user._id, { refreshToken }, { new: true });
+
+  
+
+       // 🍪 Set refresh token in cookie
+       res.cookie("refreshToken", refreshToken, {
+           httpOnly: true,
+           maxAge: 72 * 60 * 60 * 1000, // 3 days
+           secure: process.env.NODE_ENV === "production",
+           expires: new Date(Date.now() + 72 * 60 * 60 * 1000),
+           path: "/"
+       });
+
+       // ✨ Send response (omit password)
+       const { password: _, ...userData } = user._doc;
+       return res.json({
+           message: "User    login successful !! ",
+           success: true,
+           token,
+           data: userData
+       
+       });
+
+    } catch (error) {
+        console.error("Login Error:", error.message);
+        return res.status(500).json({
+            message: "Error occurred during login",
+            success: false,
+            error: error.message,
+        });
+    }
+};
+
+
 
 module.exports = { logInUser, handleRefreshToken };

@@ -34,9 +34,31 @@ const logIn = async (req, res) => {
             console.log("Is password correct? ", isPasswordCorrect);
 
             if (isPasswordCorrect) {
+                
                 // Generate access and refresh tokens
-                const token = generateToken(user.id);
-                const refreshToken = await generateRefreshToken(user.id);
+                const token = generateToken(user);
+                const refreshToken = await generateRefreshToken(user._id);
+        
+                //  Update user with refreshToken
+                await userModel.findByIdAndUpdate(user._id, { refreshToken }, { new: true });
+        
+                //  refresh token in cookie
+                res.cookie("refreshToken", refreshToken, {
+                    httpOnly: true,
+                    maxAge: 72 * 60 * 60 * 1000, // 3 days
+                    secure: process.env.NODE_ENV === "production",
+                    expires: new Date(Date.now() + 72 * 60 * 60 * 1000),
+                    path: "/"
+                });
+        
+                // ✨ Send response (omit password)
+                const { password: _, ...adminData } = user._doc;
+                return res.json({
+                    message: "Admin login successful",
+                    success: true,
+                    token,
+                    data: adminData,
+                });
 
                 // Save the refresh token to the database
                 const updatedUser = await userModel.findByIdAndUpdate(

@@ -6,7 +6,7 @@ const generateToken = (user) => {
     throw new Error("Invalid user data for token generation");
   }
 
-  // 🛑 Debugging: Log the user data before generating a token
+
   console.log("Generating token for user:", {
     id: user._id,
     email: user.email,
@@ -14,6 +14,7 @@ const generateToken = (user) => {
   });
 
   return jwt.sign(
+
     {
       id: user._id,
       email: user.email,
@@ -21,6 +22,10 @@ const generateToken = (user) => {
     },
     process.env.JWT_SECRET_KEYS_AUTHORIZE,  // ✅ Correct placement of secret key
     { expiresIn: "2d" }
+    ,
+    console.log({
+      message: "Token  generated "
+    })
   );
 };
 

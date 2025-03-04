@@ -36,7 +36,7 @@ const createUser = asyncHandler(async (req  ,   res ,   next) => {
         // Determine role //  only  two  admins 
         const adminCount = await userModel.countDocuments({ role: "admin" });
         let role = "user";
-        if (adminCount < 2) {
+        if (adminCount < 1) {
             role = "admin";
         }
 

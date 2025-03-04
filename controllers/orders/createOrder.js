@@ -6,77 +6,87 @@ const { validateMongoDbId } = require("../../utils/validateMongoId");
 const asyncHandler = require("express-async-handler");
 const uniqid = require("uniqid");
 const mongoose = require("mongoose");
+const sendThankYouEmail = require("../emailController/thankYouMail");
 
-
+// Create Order
+// Enhanced order creation endpoint
 const createOrder = asyncHandler(async (req, res) => {
     try {
-        const { _id } = req.user; 
-        validateMongoDbId(_id);
+        const { _id } = req.user;
+        const { paymentMethod } = req.body;
 
-        // Find the user
-        const user = await userModel.findById(_id);
-
-        // Get user's cart
-        let userCart = await cartModel.findOne({ orderedBy: user._id });
-
-        if (!userCart) {
-            return res.status(400).json({ message: "Cart not found" });
+        // Validate payment method
+        const validMethods = ['mpesa', 'card', 'cash'];
+        if (!validMethods.includes(paymentMethod)) {
+            return res.status(400).json({ message: "Invalid payment method" });
         }
 
-        let finalAmount = userCart.cartTotal;
+        // Get user and cart
+        const user = await userModel.findById(_id);
+        const userCart = await cartModel.findOne({ orderedBy: _id });
+        
+        if (!userCart || userCart.products.length === 0) {
+            return res.status(400).json({ message: "Cart is empty" });
+        }
 
-        // Create a new order
-        let newOrder = await new orderModel({
+        // Create payment intent
+        const paymentIntent = {
+            id: uniqid(),
+            method: paymentMethod,
+            amount: userCart.cartTotal,
+            status: paymentMethod === 'cash' ? 'pending' : 'processing',
+            created: Date.now(),
+            currency: "KSH"
+        };
+
+        // Create order
+        const newOrder = await orderModel.create({
             products: userCart.products,
-            paymentIntent: {
-                id: uniqid(),
-                method: "COD",
-                amount: finalAmount,
-                status: "pending",
-                created: Date.now(),
-                currency: "KSH", 
-            },
-            orderedBy: user._id,
-            orderStatus: "pending",
-        }).save();
-
-        // Update product stock
-        let update = userCart.products.map((item) => {
-            return {
-                updateOne: {
-                    filter: { _id: item.product._id },
-                    update: { $inc: { quantity: -item.count, sold: +item.count } },
-                },
-            };
+            paymentIntent,
+            orderedBy: _id,
+            orderStatus: "processing"
         });
 
-        const updated = await productModel.bulkWrite(update);
+        // Update stock and clear cart
+        await productModel.bulkWrite(userCart.products.map(item => ({
+            updateOne: {
+                filter: { _id: item.product._id },
+                update: { 
+                    $inc: { 
+                        quantity: -item.count, 
+                        sold: +item.count 
+                    }
+                }
+            }
+        })));
 
-        res.json({
-            message: "Order created successfully",
+        await cartModel.findOneAndDelete({ orderedBy: _id });
+
+        res.status(201).json({
+            success: true,
             order: newOrder,
+            message: "Order created successfully"
         });
+
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error("Order creation error:", error);
+        res.status(500).json({
+            success: false,
+            message: "Error creating order",
+            error: error.message
+        });
     }
-});
+});                    
+  
 
-
-
+// Get All Orders
 const getOrders = asyncHandler(async (req, res) => {
     try {
-      
         const orders = await orderModel.find()
-            .populate({
-                path: "orderedBy",
-                select: "name email", 
-            })
-            .populate({
-                path: "products.product",
-                select: "title price",
-            }).exec()
+            .populate("orderedBy", "name email")
+            .populate("products.product", "title price");
 
-        if (!orders || orders.length === 0) {
+        if (!orders.length) {
             return res.status(404).json({ message: "No orders found." });
         }
 
@@ -89,72 +99,48 @@ const getOrders = asyncHandler(async (req, res) => {
     }
 });
 
-
-
-
-
-
+// Get Order by ID
 const getOrderById = asyncHandler(async (req, res) => {
     const { orderId } = req.params;
 
-    console.log("Received Order ID:", orderId);
-
-    // Validate order ID
+    // Validate Order ID
     if (!mongoose.Types.ObjectId.isValid(orderId)) {
-        return res.status(400).json({ 
-            message: "Invalid order ID",
-            success: false,
-        });
+        return res.status(400).json({ message: "Invalid order ID", success: false });
     }
 
     try {
-        // Find the order by ID 
         const order = await orderModel.findById(orderId)
-        .populate("orderedBy", "name email") 
-        .populate("products.product", "title price") 
-        .populate("orderStatus", "orderStatus"); 
-    
+            .populate("orderedBy", "name email")
+            .populate("products.product", "title price");
 
-        // If order is not found
         if (!order) {
-            return res.status(404).json({ 
-                message: "Order not found.",
-                success: false,
-            });
+            return res.status(404).json({ message: "Order not found.", success: false });
         }
 
-        // Return the order details
-        res.status(200).json({
-            success: true,
-            order,
-        });
+        res.status(200).json({ success: true, order });
     } catch (error) {
-        console.error("Error fetching order:", error);
-        res.status(500).json({ 
-            message: "Error fetching order", 
-            success: false,
-            error: error.message,
-        });
+        res.status(500).json({ message: "Error fetching order", success: false, error: error.message });
     }
 });
 
-
-
-
-const sendThankYouEmail = require("../emailController/thankYouMail");
-const updateOrderStatus = async (req, res) => {
+// Update Order Status
+const updateOrderStatus = asyncHandler(async (req, res) => {
     try {
         const { id } = req.params;
         const { orderStatus } = req.body;
 
-      
+        // Validate order status
+        const validStatuses = ["pending", "processing", "shipped", "completed", "cancelled"];
+        if (!validStatuses.includes(orderStatus)) {
+            return res.status(400).json({ message: "Invalid order status" });
+        }
+
         const order = await orderModel.findById(id).populate("orderedBy", "email name");
 
         if (!order) {
             return res.status(404).json({ message: "Order not found" });
         }
 
-       
         if (order.orderStatus === "Completed") {
             return res.status(400).json({ message: "Order is already completed" });
         }
@@ -163,10 +149,10 @@ const updateOrderStatus = async (req, res) => {
         order.orderStatus = orderStatus;
         await order.save();
 
-        // Send email only when order is marked "Completed"
+        // Send Thank-You Email when order is completed
         if (orderStatus === "Completed" && order.orderedBy?.email) {
             const emailData = {
-                to: order.orderedBy.email, // Use populated email
+                to: order.orderedBy.email,
                 subject: "Thank You for Shopping with Majesty Shoe Collection! 🎉",
                 html: `
                     <h2>Dear ${order.orderedBy.name || "Valued Customer"},</h2>
@@ -177,7 +163,7 @@ const updateOrderStatus = async (req, res) => {
                 `,
             };
 
-            await sendEmail(emailData);
+            await sendThankYouEmail(emailData);
             console.log(`✅ Thank-you email sent to ${order.orderedBy.email}`);
         }
 
@@ -187,10 +173,6 @@ const updateOrderStatus = async (req, res) => {
         console.error("❌ Error updating order status:", error);
         return res.status(500).json({ message: "Internal server error" });
     }
-};
+});
 
-
-
-
-
-module.exports = { createOrder  ,  getOrders  ,  updateOrderStatus  ,  getOrderById  };
+module.exports = { createOrder, getOrders, updateOrderStatus, getOrderById };
